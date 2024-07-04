@@ -1,0 +1,6 @@
+initial_time=3:00:00
+current_time=3:00:00
+current_time_played=0:00:00
+runs=[0, 0, 0, 0, 0]
+initial_time_decrease=[5, 10, 15, 25, 3*60]
+decrease_geometric_reason=0.7
