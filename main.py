@@ -23,8 +23,19 @@ def main():
     countdownTitle = tk.Label(window, fg="#ffffff", text="Je relance encore pendant :", font=("Courier", 15, "bold"), bg="#000000")
     countdownTitle.pack()
 
+    global time_left
     countdown = tk.Label(window, fg="#ffffff", text=str(datetime.timedelta(seconds=time_left)), font=("Courier", 18, "bold"), bg="#000000")
     countdown.pack()
+
+    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg="#000000")
+    blank.pack()
+
+    chronoTitle = tk.Label(window, fg="#ffffff", text="Playing for:", font=("Courier", 15, "bold"), bg="#000000")
+    chronoTitle.pack()
+
+    global time_played
+    chrono = tk.Label(window, fg="#ffffff", text=str(datetime.timedelta(seconds=time_played)), font=("Courier", 18, "bold"), bg="#000000")
+    chrono.pack()
 
     blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg="#000000")
     blank.pack()
@@ -86,10 +97,12 @@ def main():
     blank.pack()
 
     def reset():
-        global time_left, base_time, runs
+        global time_left, base_time, runs, time_played
+        time_played = 0
         time_left = base_time
         runs = [0, 0, 0, 0, 0]
         countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
+        chrono["text"] = str(datetime.timedelta(seconds=time_played))
         runsLabel["text"] = f"Today's runs so far: EH:{runs[0]} // DT:{runs[1]} // ST:{runs[2]} // RC:{runs[3]} // Golden:{runs[4]}"
 
 
@@ -113,7 +126,7 @@ def main():
     runsLabel = tk.Label(window, fg="#ffffff", text=f"Today's runs so far: EH:{runs[0]} // DT:{runs[1]} // ST:{runs[2]} // RC:{runs[3]} // Golden:{runs[4]}", font=("Courier", 18, "bold"), bg="#000000")
     runsLabel.pack()
 
-    return countdown, runsLabel
+    return countdown, chrono, runsLabel
 
 
 # Create window
@@ -127,18 +140,21 @@ window.title("SimpleCountdown")
 # Variables globales
 time = time.time()
 time_left = base_time
+time_played = 0
 paused = False
 runs = [0, 0, 0, 0, 0]
 
-countdown, runsLabel = main()
+countdown, chrono, runsLabel = main()
 
 
 def update():
     window.after(1000, update)
-    global time_left
+    global time_left, time_played
     if not paused:
         time_left -= 1
+        time_played += 1
     countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
+    chrono["text"] = str(datetime.timedelta(seconds=time_played))
 
 
 window.after(0, update)  # begin updates
