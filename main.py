@@ -105,7 +105,6 @@ def main():
         chrono["text"] = str(datetime.timedelta(seconds=time_played))
         runsLabel["text"] = f"Today's runs so far: EH:{runs[0]} // DT:{runs[1]} // ST:{runs[2]} // RC:{runs[3]} // Golden:{runs[4]}"
 
-
     button = ttk.Button(window, text="Reset", width=20, command=reset)
     button.pack()
 
@@ -133,7 +132,7 @@ def main():
 window = tk.Tk()
 
 # Set window size & name
-window.geometry("1000x500")
+window.geometry("1000x600")
 window.resizable(True, True)
 window.title("SimpleCountdown")
 
