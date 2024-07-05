@@ -48,6 +48,26 @@ def updateBounties():
         bountyLabel["text"] = str(time_decrease[i])
 
 
+def updateCountdown():
+    countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
+
+
+def updateChrono():
+    chrono["text"] = str(datetime.timedelta(seconds=time_played))
+
+
+def updateRuns():
+    runsLabel["text"] = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+
+
+def updateCountdownTitleText():
+    titleLabels[0]["text"] = countdownTitleText
+
+
+def updateChronoTitleText():
+    titleLabels[1]["text"] = chronoTitleText
+
+
 def pause():
     global paused
     paused = not paused
@@ -98,8 +118,8 @@ def main():
         time_left = max(0, time_left - round(60 * initial_time_decrease[0] * (decrease_geometric_reason**runs[0])))
         runs[0] += 1
 
-        countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
-        runsLabel["text"] = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+        updateCountdown()
+        updateRuns()
         updateBounties()
 
     EHbutton = ttk.Button(window, text=f"{CPnames[0]}", width=20, command=EH)
@@ -112,8 +132,8 @@ def main():
         global time_left, runs, initial_time_decrease
         time_left = max(0, time_left - round(60 * initial_time_decrease[1] * (decrease_geometric_reason**runs[1])))
         runs[1] += 1
-        countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
-        runsLabel["text"] = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+        updateCountdown()
+        updateRuns()
         updateBounties()
 
     DTbutton = ttk.Button(window, text=f"{CPnames[1]}", width=20, command=DT)
@@ -126,8 +146,8 @@ def main():
         global time_left, runs, initial_time_decrease
         time_left = max(0, time_left - round(60 * initial_time_decrease[2] * (decrease_geometric_reason**runs[2])))
         runs[2] += 1
-        countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
-        runsLabel["text"] = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+        updateCountdown()
+        updateRuns()
         updateBounties()
 
     STbutton = ttk.Button(window, text=f"{CPnames[2]}", width=20, command=ST)
@@ -140,8 +160,8 @@ def main():
         global time_left, runs, initial_time_decrease
         time_left = max(0, time_left - round(60 * initial_time_decrease[3] * (decrease_geometric_reason**runs[3])))
         runs[3] += 1
-        countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
-        runsLabel["text"] = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+        updateCountdown()
+        updateRuns()
         updateBounties()
 
     RCbutton = ttk.Button(window, text=f"{CPnames[3]}", width=20, command=RC)
@@ -154,8 +174,8 @@ def main():
         global time_left, runs, initial_time_decrease
         time_left = max(0, time_left - round(60 * initial_time_decrease[4] * (decrease_geometric_reason**runs[4])))
         runs[4] += 1
-        countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
-        runsLabel["text"] = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+        updateCountdown()
+        updateRuns()
         updateBounties()
 
     Goldenbutton = ttk.Button(window, text=f"{CPnames[4]}", width=20, command=Golden)
@@ -172,9 +192,9 @@ def main():
         time_played = 0
         time_left = initial_time
         runs = [0, 0, 0, 0, 0]
-        countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
-        chrono["text"] = str(datetime.timedelta(seconds=time_played))
-        runsLabel["text"] = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+        updateCountdown()
+        updateChrono()
+        updateRuns()
         updateBounties()
 
     button = ttk.Button(window, text="Reset", width=20, command=reset)
@@ -195,9 +215,10 @@ def main():
     creditsLabel = tk.Label(window, fg="#ffffff", text="Fait à l'arrache par SpygR", font=("Courier", 10), bg="#000000")
     creditsLabel.pack(side=tk.BOTTOM, anchor="sw")
 
+    titleLabels = [countdownTitle, chronoTitle]
     CPbuttons = [EHbutton, DTbutton, STbutton, RCbutton, Goldenbutton]
     bountyLabels = [EHbounty, DTbounty, STbounty, RCbounty, Goldenbounty]
-    return countdown, chrono, pauseButton, runsLabel, CPbuttons, bountyLabels
+    return countdown, chrono, pauseButton, titleLabels, runsLabel, CPbuttons, bountyLabels
 
 
 # Create window
@@ -221,12 +242,22 @@ chronoTitleText = read_data(8)
 paused = True
 time_decrease = [str(datetime.timedelta(seconds=round(60 * initial_time_decrease[i] * (decrease_geometric_reason ** runs[i])))) for i in range(5)]
 
-countdown, chrono, pauseButton, runsLabel, CPbuttons, bountyLabels = main()
+countdown, chrono, pauseButton, titleLabels, runsLabel, CPbuttons, bountyLabels = main()
 
 
 def update():
     window.after(1000, update)
-    global time_left, time_played, time_decrease
+    global initial_time, time_left, time_played, runs, initial_time_decrease, decrease_geometric_reason, \
+        CPnames, countdownTitleText, chronoTitleText, time_decrease
+
+    # Update variables from data.txt
+    initial_time = read_data(0)
+    initial_time_decrease = read_data(4)
+    decrease_geometric_reason = read_data(5)
+    CPnames = read_data(6)
+    countdownTitleText = read_data(7)
+    chronoTitleText = read_data(8)
+
     # Update data.txt
     data = [initial_time, time_left, time_played, runs, initial_time_decrease, decrease_geometric_reason, CPnames, countdownTitleText, chronoTitleText]
     write_data(data)
@@ -237,8 +268,11 @@ def update():
         time_played += 1
 
     # Update visuals
-    countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
-    chrono["text"] = str(datetime.timedelta(seconds=time_played))
+    updateCountdown()
+    updateChrono()
+    updateRuns()
+    updateCountdownTitleText()
+    updateChronoTitleText()
     for i, button in enumerate(CPbuttons):
         button["text"] = CPnames[i]
     updateBounties()
