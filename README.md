@@ -27,5 +27,5 @@ pip install tkinter
 - Run the app with `python main.py` in the app's directory
 
 ## Automated Checkpoint Detection Using AHK
-I made a simple AHK script and updated this one in order to track the checkpoints automatically during your runs. If you run Farewell Golden on a monitor that has the same pixels setup as I do then you're good to go xD Else, this might be useful: https://www.autohotkey.com/docs/v1/lib/ImageSearch.htm#Remarks
+I made a simple AHK script and updated this one in order to track the checkpoints automatically during your runs, check the "AHK" branch. If you run Farewell Golden on a monitor that has the same pixels setup as I do then you're good to go xD Else, this might be useful: https://www.autohotkey.com/docs/v1/lib/ImageSearch.htm#Remarks
 Enjoy!
