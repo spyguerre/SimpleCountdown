@@ -74,6 +74,33 @@ def pause():
     pauseButton["text"] = "Pause" if not paused else "Resume"
 
 
+def updateRunsAHK():
+    global whichCP
+    currentCP = int(open("WhichCP.txt", "r").readlines()[0])
+    if not currentCP == whichCP:
+        if currentCP == whichCP + 1:  # The player moved one checkpoint forward
+            whichCP = currentCP
+        elif currentCP == 1:  # The played has died and is back at the beginning
+            CPReachedLastRun = whichCP-4
+            if CPReachedLastRun >= 0:  # The player reached EH or further
+                addRun(CPReachedLastRun)
+            whichCP = currentCP
+        elif whichCP == 8:  # The played has gotten the golden and doesn't have to return to start for the run to be taken into account
+            addRun(4)
+        else:  # The player has jumped another checkpoint to practice. Hence, reset whichCP just in case.
+            whichCP = 1
+
+
+def addRun(i):
+    global time_left, runs, initial_time_decrease
+    time_left = max(0, time_left - round(60 * initial_time_decrease[i] * (decrease_geometric_reason ** runs[i])))
+    runs[i] += 1
+
+    updateCountdown()
+    updateRuns()
+    updateBounties()
+
+
 def main():
     global time_left, time_played, runs, initial_time_decrease
 
@@ -113,72 +140,31 @@ def main():
     bounties = tk.Frame(bg="#000000")
     bounties.pack()
 
-    def EH():
-        global time_left, runs, initial_time_decrease
-        time_left = max(0, time_left - round(60 * initial_time_decrease[0] * (decrease_geometric_reason**runs[0])))
-        runs[0] += 1
-
-        updateCountdown()
-        updateRuns()
-        updateBounties()
-
-    EHbutton = ttk.Button(window, text=f"{CPnames[0]}", width=20, command=EH)
+    EHbutton = ttk.Button(window, text=f"{CPnames[0]}", width=20, command=lambda: addRun(0))
     EHbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
     EHbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[0]), font=("Courier", 12, "bold"), bg="#000000", width=13)
     EHbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
 
-    def DT():
-        global time_left, runs, initial_time_decrease
-        time_left = max(0, time_left - round(60 * initial_time_decrease[1] * (decrease_geometric_reason**runs[1])))
-        runs[1] += 1
-        updateCountdown()
-        updateRuns()
-        updateBounties()
-
-    DTbutton = ttk.Button(window, text=f"{CPnames[1]}", width=20, command=DT)
+    DTbutton = ttk.Button(window, text=f"{CPnames[1]}", width=20, command=lambda: addRun(1))
     DTbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
     DTbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[1]), font=("Courier", 12, "bold"), bg="#000000", width=13)
     DTbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
 
-    def ST():
-        global time_left, runs, initial_time_decrease
-        time_left = max(0, time_left - round(60 * initial_time_decrease[2] * (decrease_geometric_reason**runs[2])))
-        runs[2] += 1
-        updateCountdown()
-        updateRuns()
-        updateBounties()
-
-    STbutton = ttk.Button(window, text=f"{CPnames[2]}", width=20, command=ST)
+    STbutton = ttk.Button(window, text=f"{CPnames[2]}", width=20, command=lambda: addRun(2))
     STbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
     STbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[2]), font=("Courier", 12, "bold"), bg="#000000", width=13)
     STbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
 
-    def RC():
-        global time_left, runs, initial_time_decrease
-        time_left = max(0, time_left - round(60 * initial_time_decrease[3] * (decrease_geometric_reason**runs[3])))
-        runs[3] += 1
-        updateCountdown()
-        updateRuns()
-        updateBounties()
-
-    RCbutton = ttk.Button(window, text=f"{CPnames[3]}", width=20, command=RC)
+    RCbutton = ttk.Button(window, text=f"{CPnames[3]}", width=20, command=lambda: addRun(3))
     RCbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
     RCbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[3]), font=("Courier", 12, "bold"), bg="#000000", width=13)
     RCbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
 
-    def Golden():
-        global time_left, runs, initial_time_decrease
-        time_left = max(0, time_left - round(60 * initial_time_decrease[4] * (decrease_geometric_reason**runs[4])))
-        runs[4] += 1
-        updateCountdown()
-        updateRuns()
-        updateBounties()
-
-    Goldenbutton = ttk.Button(window, text=f"{CPnames[4]}", width=20, command=Golden)
+    Goldenbutton = ttk.Button(window, text=f"{CPnames[4]}", width=20, command=lambda: addRun(4))
     Goldenbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
     Goldenbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[4]), font=("Courier", 12, "bold"), bg="#000000", width=13)
@@ -241,6 +227,7 @@ countdownTitleText = read_data(7)
 chronoTitleText = read_data(8)
 paused = True
 time_decrease = [str(datetime.timedelta(seconds=round(60 * initial_time_decrease[i] * (decrease_geometric_reason ** runs[i])))) for i in range(5)]
+whichCP = 1
 
 countdown, chrono, pauseButton, titleLabels, runsLabel, CPbuttons, bountyLabels = main()
 
@@ -257,6 +244,9 @@ def update():
     CPnames = read_data(6)
     countdownTitleText = read_data(7)
     chronoTitleText = read_data(8)
+
+    # Update CP from AHK script
+    updateRunsAHK()
 
     # Update data.txt
     data = [initial_time, time_left, time_played, runs, initial_time_decrease, decrease_geometric_reason, CPnames, countdownTitleText, chronoTitleText]
