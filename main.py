@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime
+from PIL import Image, ImageDraw, ImageFont, ImageTk
 
 
 def read_data(i):
@@ -49,23 +50,53 @@ def updateBounties():
 
 
 def updateCountdown():
-    countdown["text"] = str(datetime.timedelta(seconds=max(time_left, 0)))
+    beforeText = countdown["text"]
+    afterText = str(datetime.timedelta(seconds=max(time_left, 0)))
+    if afterText != beforeText:
+        # Create the outlined text image
+        image = create_outlined_text_image(afterText, "white", "black", 3)
+        countdown.config(image=image)
+        countdown.image = image  # Keep a reference to the image to prevent garbage collection
 
 
 def updateChrono():
-    chrono["text"] = str(datetime.timedelta(seconds=time_played))
+    beforeText = chrono["text"]
+    afterText = str(datetime.timedelta(seconds=time_played))
+    if afterText != beforeText:
+        # Create the outlined text image
+        image = create_outlined_text_image(afterText, "white", "black", 3)
+        chrono.config(image=image)
+        chrono.image = image  # Keep a reference to the image to prevent garbage collection
 
 
 def updateRuns():
-    runsLabel["text"] = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+    beforeText = runsLabel["text"]
+    afterText = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+    if afterText != beforeText:
+        # Create the outlined text image
+        image = create_outlined_text_image(afterText, "white", "black", 3)
+        runsLabel.config(image=image)
+        runsLabel.image = image  # Keep a reference to the image to prevent garbage collection
 
 
 def updateCountdownTitleText():
-    titleLabels[0]["text"] = countdownTitleText
+    beforeText = titleLabels[0]["text"]
+    afterText = countdownTitleText
+    if afterText != beforeText:
+        # Create the outlined text image
+        image = create_outlined_text_image(afterText, "white", "black", 3)
+        titleLabels[0].config(image=image)
+        titleLabels[0].image = image  # Keep a reference to the image to prevent garbage collection
 
 
 def updateChronoTitleText():
-    titleLabels[1]["text"] = chronoTitleText
+    beforeText = titleLabels[1]["text"]
+    afterText = chronoTitleText
+    if afterText != beforeText:
+        # Create the outlined text image
+        image = create_outlined_text_image(afterText, "white", "black", 3)
+        titleLabels[1].config(image=image)
+        titleLabels[1].image = image  # Keep a reference to the image to prevent garbage collection
 
 
 def pause():
@@ -91,6 +122,29 @@ def updateRunsAHK():
             whichCP = 1
 
 
+def create_outlined_text_image(text, text_color, outline_color, outline_width, padding=5):
+    # Create a temporary image to calculate text size
+    temp_image = Image.new('RGBA', (1, 1))
+    draw = ImageDraw.Draw(temp_image)
+    bbox = draw.textbbox((0, 0), text, font=font)
+    width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
+
+    # Add padding to width and height
+    width += 2 * padding
+    height += 2 * padding
+
+    # Create an image with the calculated size and outline width
+    image = Image.new('RGBA', (width + outline_width * 2, height + outline_width * 2), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    x, y = outline_width + padding, outline_width + padding
+    for dx in range(-outline_width, outline_width + 1):
+        for dy in range(-outline_width, outline_width + 1):
+            if dx != 0 or dy != 0:
+                draw.text((x + dx, y + dy), text, font=font, fill=outline_color)
+    draw.text((x, y), text, font=font, fill=text_color)
+    return ImageTk.PhotoImage(image)
+
+
 def addRun(i):
     global time_left, runs, initial_time_decrease
     time_left = max(0, time_left - round(60 * initial_time_decrease[i] * (decrease_geometric_reason ** runs[i])))
@@ -104,73 +158,73 @@ def addRun(i):
 def main():
     global time_left, time_played, runs, initial_time_decrease
 
-    canvas = tk.Canvas(width=10000, height=10000, bg="#000000")
+    canvas = tk.Canvas(width=10000, height=10000, bg=bgColor)
     canvas.place(x=-2, y=-2)
 
-    appTitle = tk.Label(window, fg="#ffffff", text="A Simple and Customizable Countdown", font=("Courier", 25, "bold underline"), bg="#000000")
+    appTitle = tk.Label(window, fg="#ffffff", text="A Simple and Customizable Countdown", font=("Courier", 25, "bold underline"), bg=bgColor)
     appTitle.pack()
 
-    appSubtitle = tk.Label(window, fg="#ffffff", text="I made for my stream because no-one else did it :p", font=("Courier", 10), bg="#000000")
+    appSubtitle = tk.Label(window, fg="#ffffff", text="I made for my stream because no-one else did it :p", font=("Courier", 10), bg=bgColor)
     appSubtitle.pack()
 
-    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg="#000000")
+    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg=bgColor)
     blank.pack()
 
-    countdownTitle = tk.Label(window, fg="#ffffff", text=countdownTitleText, font=("Courier", 15, "bold"), bg="#000000")
+    countdownTitle = tk.Label(window, fg="#ffffff", text="", font=("Courier", 15, "bold"), bg=bgColor)
     countdownTitle.pack()
 
-    countdown = tk.Label(window, fg="#ffffff", text=str(datetime.timedelta(seconds=time_left)), font=("Courier", 18, "bold"), bg="#000000")
+    countdown = tk.Label(window, fg="#ffffff", text="", font=("Courier", 25, "bold"), bg=bgColor)
     countdown.pack()
 
-    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg="#000000")
+    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg=bgColor)
     blank.pack()
 
-    chronoTitle = tk.Label(window, fg="#ffffff", text=chronoTitleText, font=("Courier", 15, "bold"), bg="#000000")
+    chronoTitle = tk.Label(window, fg="#ffffff", text="", font=("Courier", 15, "bold"), bg=bgColor)
     chronoTitle.pack()
 
-    chrono = tk.Label(window, fg="#ffffff", text=str(datetime.timedelta(seconds=time_played)), font=("Courier", 18, "bold"), bg="#000000")
+    chrono = tk.Label(window, fg="#ffffff", text="", font=("Courier", 18, "bold"), bg=bgColor)
     chrono.pack()
 
-    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg="#000000")
+    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg=bgColor)
     blank.pack()
 
-    buttons = tk.Frame(bg="#000000")
+    buttons = tk.Frame(bg=bgColor)
     buttons.pack()
 
-    bounties = tk.Frame(bg="#000000")
+    bounties = tk.Frame(bg=bgColor)
     bounties.pack()
 
     EHbutton = ttk.Button(window, text=f"{CPnames[0]}", width=20, command=lambda: addRun(0))
     EHbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
-    EHbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[0]), font=("Courier", 12, "bold"), bg="#000000", width=13)
+    EHbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[0]), font=("Courier", 12, "bold"), bg=bgColor, width=13)
     EHbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
 
     DTbutton = ttk.Button(window, text=f"{CPnames[1]}", width=20, command=lambda: addRun(1))
     DTbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
-    DTbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[1]), font=("Courier", 12, "bold"), bg="#000000", width=13)
+    DTbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[1]), font=("Courier", 12, "bold"), bg=bgColor, width=13)
     DTbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
 
     STbutton = ttk.Button(window, text=f"{CPnames[2]}", width=20, command=lambda: addRun(2))
     STbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
-    STbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[2]), font=("Courier", 12, "bold"), bg="#000000", width=13)
+    STbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[2]), font=("Courier", 12, "bold"), bg=bgColor, width=13)
     STbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
 
     RCbutton = ttk.Button(window, text=f"{CPnames[3]}", width=20, command=lambda: addRun(3))
     RCbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
-    RCbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[3]), font=("Courier", 12, "bold"), bg="#000000", width=13)
+    RCbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[3]), font=("Courier", 12, "bold"), bg=bgColor, width=13)
     RCbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
 
     Goldenbutton = ttk.Button(window, text=f"{CPnames[4]}", width=20, command=lambda: addRun(4))
     Goldenbutton.pack(in_=buttons, side=tk.LEFT, padx=10)
 
-    Goldenbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[4]), font=("Courier", 12, "bold"), bg="#000000", width=13)
+    Goldenbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[4]), font=("Courier", 12, "bold"), bg=bgColor, width=13)
     Goldenbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
 
-    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg="#000000")
+    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg=bgColor)
     blank.pack()
 
     def reset():
@@ -186,19 +240,19 @@ def main():
     button = ttk.Button(window, text="Reset", width=20, command=reset)
     button.pack()
 
-    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg="#000000")
+    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg=bgColor)
     blank.pack()
 
     pauseButton = ttk.Button(window, text="Resume", width=20, command=pause)
     pauseButton.pack()
 
-    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg="#000000")
+    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg=bgColor)
     blank.pack()
 
-    runsLabel = tk.Label(window, fg="#ffffff", text=f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}", font=("Courier", 18, "bold"), bg="#000000")
+    runsLabel = tk.Label(window, fg="#ffffff", text="", font=("Courier", 18, "bold"), bg=bgColor)
     runsLabel.pack()
 
-    creditsLabel = tk.Label(window, fg="#ffffff", text="Fait à l'arrache par SpygR", font=("Courier", 10), bg="#000000")
+    creditsLabel = tk.Label(window, fg="#ffffff", text="Fait à l'arrache par SpygR", font=("Courier", 10), bg=bgColor)
     creditsLabel.pack(side=tk.BOTTOM, anchor="sw")
 
     titleLabels = [countdownTitle, chronoTitle]
@@ -211,7 +265,7 @@ def main():
 window = tk.Tk()
 
 # Set window size & name
-window.geometry("1000x642")
+window.geometry("1000x700")
 window.resizable(True, True)
 window.title("SimpleCustomizableCountdown")
 
@@ -225,6 +279,8 @@ decrease_geometric_reason = read_data(5)
 CPnames = read_data(6)
 countdownTitleText = read_data(7)
 chronoTitleText = read_data(8)
+bgColor = "#004200"
+font = ImageFont.truetype("CourierPrime-Bold.ttf", 25)
 paused = True
 time_decrease = [str(datetime.timedelta(seconds=round(60 * initial_time_decrease[i] * (decrease_geometric_reason ** runs[i])))) for i in range(5)]
 whichCP = 1

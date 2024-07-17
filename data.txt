@@ -1,9 +1,9 @@
 initial_time=3:00:00
-current_time=0:00:00
-current_time_played=0:00:00
-runs=[0, 0, 0, 0, 1]
+current_time=2:58:22
+current_time_played=0:01:38
+runs=[0, 0, 0, 0, 0]
 initial_time_decrease=[5, 10, 15, 25, 180]
 decrease_geometric_reason=0.7
 CPnames=['EH', 'DT', 'ST', 'RC', 'Golden']
-countdownTitleText='Je relance encore pendant :'
+countdownTitleText='Je relance encore pendant au moins :'
 chronoTitleText='Playing for:'
