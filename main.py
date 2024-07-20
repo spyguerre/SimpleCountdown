@@ -26,6 +26,8 @@ def read_data(i):
         return eval(open("data.txt", "r").readlines()[7].split("=")[1])
     elif i == 8:
         return eval(open("data.txt", "r").readlines()[8].split("=")[1])
+    elif i == 9:
+        return int(eval(open("data.txt", "r").readlines()[9].split("=")[1]))
 
 
 def write_data(data):
@@ -39,6 +41,7 @@ def write_data(data):
     string += "CPnames=" + str(data[6]) + "\n"
     string += "countdownTitleText='" + str(data[7]) + "'\n"
     string += "chronoTitleText='" + str(data[8]) + "'\n"
+    string += "autoSwitchTimers=" + str(data[9]) + "\n"
 
     open("data.txt", "w").write(string)
 
@@ -261,10 +264,14 @@ def main():
     blank.pack()
 
     def reset():
-        global time_left, runs, time_played
+        global time_left, runs, time_played, countdown, chrono, timersAlreadySwitched
         time_played = 0
         time_left = initial_time
         runs = [0, 0, 0, 0, 0]
+        if timersAlreadySwitched:
+            countdown, chrono = chrono, countdown
+            titleLabels[0], titleLabels[1] = titleLabels[1], titleLabels[0]
+            timersAlreadySwitched = 0
         updateCountdown()
         updateChrono()
         updateRuns()
@@ -290,8 +297,9 @@ def main():
 
     titleLabels = [countdownTitle, chronoTitle]
     CPbuttons = [EHbutton, DTbutton, STbutton, RCbutton, Goldenbutton]
+    CPMinusButtons = [EHMinusbutton, DTMinusbutton, STMinusbutton, RCMinusbutton, GoldenMinusbutton]
     bountyLabels = [EHbounty, DTbounty, STbounty, RCbounty, Goldenbounty]
-    return countdown, chrono, pauseButton, titleLabels, runsLabel, CPbuttons, bountyLabels
+    return countdown, chrono, pauseButton, titleLabels, runsLabel, CPbuttons, CPMinusButtons, bountyLabels
 
 
 # Create window
@@ -312,19 +320,21 @@ decrease_geometric_reason = read_data(5)
 CPnames = read_data(6)
 countdownTitleText = read_data(7)
 chronoTitleText = read_data(8)
+autoSwitchTimers = read_data(9)
 bgColor = "#004200"
 font = ImageFont.truetype("CourierPrime-Bold.ttf", 25)
 paused = True
+timersAlreadySwitched = 0
 time_decrease = [str(datetime.timedelta(seconds=round(60 * initial_time_decrease[i] * (decrease_geometric_reason ** runs[i])))) for i in range(5)]
 whichCP = 1
 
-countdown, chrono, pauseButton, titleLabels, runsLabel, CPbuttons, bountyLabels = main()
+countdown, chrono, pauseButton, titleLabels, runsLabel, CPbuttons, CPMinusButtons, bountyLabels = main()
 
 
 def update():
     window.after(1000, update)
     global initial_time, time_left, time_played, runs, initial_time_decrease, decrease_geometric_reason, \
-        CPnames, countdownTitleText, chronoTitleText, time_decrease
+        CPnames, countdownTitleText, chronoTitleText, time_decrease, countdown, chrono, titleLabels, timersAlreadySwitched
 
     # Update variables from data.txt
     initial_time = read_data(0)
@@ -334,11 +344,17 @@ def update():
     countdownTitleText = read_data(7)
     chronoTitleText = read_data(8)
 
+    # Switch timers if necessary
+    if autoSwitchTimers and time_left == 0 and not timersAlreadySwitched:
+        countdown, chrono = chrono, countdown
+        titleLabels[0], titleLabels[1] = titleLabels[1], titleLabels[0]
+        timersAlreadySwitched = 1
+
     # Update CP from AHK script
     updateRunsAHK()
 
     # Update data.txt
-    data = [initial_time, time_left, time_played, runs, initial_time_decrease, decrease_geometric_reason, CPnames, countdownTitleText, chronoTitleText]
+    data = [initial_time, time_left, time_played, runs, initial_time_decrease, decrease_geometric_reason, CPnames, countdownTitleText, chronoTitleText, autoSwitchTimers, timersAlreadySwitched]
     write_data(data)
 
     # Update times if not paused
@@ -354,6 +370,8 @@ def update():
     updateChronoTitleText()
     for i, button in enumerate(CPbuttons):
         button["text"] = CPnames[i]
+    for i, button in enumerate(CPMinusButtons):
+        button["text"] = f"Remove 1 {CPnames[i]} run"
     updateBounties()
 
 

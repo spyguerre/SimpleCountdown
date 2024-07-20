@@ -7,3 +7,4 @@ decrease_geometric_reason=0.7
 CPnames=['EH', 'DT', 'ST', 'RC', 'Golden']
 countdownTitleText='Je relance encore pendant au moins :'
 chronoTitleText='Playing for:'
+autoSwitchTimers=1
