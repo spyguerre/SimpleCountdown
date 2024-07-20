@@ -155,6 +155,17 @@ def addRun(i):
     updateBounties()
 
 
+def removeRun(i):
+    global time_left, runs, initial_time_decrease
+    if runs[i] > 0:
+        runs[i] -= 1
+        time_left = max(0, time_left + round(60 * initial_time_decrease[i] * (decrease_geometric_reason ** runs[i])))
+
+    updateCountdown()
+    updateRuns()
+    updateBounties()
+
+
 def main():
     global time_left, time_played, runs, initial_time_decrease
 
@@ -223,6 +234,27 @@ def main():
 
     Goldenbounty = tk.Label(window, fg="#ffffff", text=str(time_decrease[4]), font=("Courier", 12, "bold"), bg=bgColor, width=13)
     Goldenbounty.pack(in_=bounties, side=tk.LEFT, padx=8)
+
+    blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg=bgColor)
+    blank.pack()
+
+    Minusbuttons = tk.Frame(bg=bgColor)
+    Minusbuttons.pack()
+
+    EHMinusbutton = ttk.Button(window, text=f"Remove 1 {CPnames[0]} run", width=20, command=lambda: removeRun(0))
+    EHMinusbutton.pack(in_=Minusbuttons, side=tk.LEFT, padx=10)
+
+    DTMinusbutton = ttk.Button(window, text=f"Remove 1 {CPnames[1]} run", width=20, command=lambda: removeRun(1))
+    DTMinusbutton.pack(in_=Minusbuttons, side=tk.LEFT, padx=10)
+
+    STMinusbutton = ttk.Button(window, text=f"Remove 1 {CPnames[2]} run", width=20, command=lambda: removeRun(2))
+    STMinusbutton.pack(in_=Minusbuttons, side=tk.LEFT, padx=10)
+
+    RCMinusbutton = ttk.Button(window, text=f"Remove 1 {CPnames[3]} run", width=20, command=lambda: removeRun(3))
+    RCMinusbutton.pack(in_=Minusbuttons, side=tk.LEFT, padx=10)
+
+    GoldenMinusbutton = ttk.Button(window, text=f"Remove 1 {CPnames[4]} run", width=20, command=lambda: removeRun(4))
+    GoldenMinusbutton.pack(in_=Minusbuttons, side=tk.LEFT, padx=10)
 
     blank = tk.Label(window, text="", font=("Courier", 25, "bold"), bg=bgColor)
     blank.pack()
