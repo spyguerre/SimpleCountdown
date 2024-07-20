@@ -110,14 +110,15 @@ def updateRunsAHK():
     currentCP = int(open("WhichCP.txt", "r").readlines()[0])
     if not currentCP == whichCP:
         if currentCP == whichCP + 1:  # The player moved one checkpoint forward
+            CPReached = currentCP-4
+            if CPReached == 0:  # The player reached EH
+                addRun(CPReached)
+            elif CPReached >= 1:  # The player reached a checkpoint strictly further than EH
+                removeRun(CPReached - 1)
+                addRun(CPReached)
             whichCP = currentCP
         elif currentCP == 1:  # The played has died and is back at the beginning
-            CPReachedLastRun = whichCP-4
-            if CPReachedLastRun >= 0:  # The player reached EH or further
-                addRun(CPReachedLastRun)
             whichCP = currentCP
-        elif whichCP == 8:  # The played has gotten the golden and doesn't have to return to start for the run to be taken into account
-            addRun(4)
         else:  # The player has jumped another checkpoint to practice. Hence, reset whichCP just in case.
             whichCP = 1
 
