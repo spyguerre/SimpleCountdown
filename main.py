@@ -74,7 +74,7 @@ def updateChrono():
 
 def updateRuns():
     beforeText = runsLabel["text"]
-    afterText = f"Today's runs so far: {CPnames[0]}:{runs[0]} // {CPnames[1]}:{runs[1]} // {CPnames[2]}:{runs[2]} // {CPnames[3]}:{runs[3]} // {CPnames[4]}:{runs[4]}"
+    afterText = f"{str(runs[0]).zfill(2)}/25    {str(runs[1]).zfill(1)}/2    {str(runs[2]).zfill(3)}/175    {str(runs[3]).zfill(1)}/8    {str(runs[4]).zfill(2)}/25"
     if afterText != beforeText:
         # Create the outlined text image
         image = create_outlined_text_image(afterText, "white", "black", 3)
@@ -306,7 +306,7 @@ def main():
 window = tk.Tk()
 
 # Set window size & name
-window.geometry("1000x700")
+window.geometry("1000x742")
 window.resizable(True, True)
 window.title("SimpleCustomizableCountdown")
 

@@ -1,10 +1,10 @@
-initial_time=3:00:00
-current_time=3:00:00
+initial_time=23:59:59
+current_time=23:59:59
 current_time_played=0:00:00
 runs=[0, 0, 0, 0, 0]
-initial_time_decrease=[5, 10, 15, 25, 180]
-decrease_geometric_reason=0.7
-CPnames=['EH', 'DT', 'ST', 'RC', 'Golden']
-countdownTitleText='Je relance encore pendant au moins :'
+initial_time_decrease=[0, 0, 0, 0, 0]
+decrease_geometric_reason=1.0
+CPnames=['Golden', 'Special Berry', 'Red Berry', 'Full Clears', 'Clear']
+countdownTitleText='Time Left:'
 chronoTitleText='Playing for:'
-autoSwitchTimers=1
+autoSwitchTimers=0
